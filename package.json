@@ -17,7 +17,7 @@
 		"astro-b"
 	],
 	"bugs": {
-		"url": "https://github.com/amirhzarei/blog.git/issues"
+		"url": "https://github.com/amirhzarei/blog/issues"
 	},
 	"scripts": {
 		"dev": "npx tinacms dev -c \"astro dev\"",
