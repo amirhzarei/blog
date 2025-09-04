@@ -1,0 +1,245 @@
+---
+heroImage: /src/assets/images/react-pattern.jpg
+category: React
+description: >-
+  Supercharge your React development with advanced patterns—from Compound
+  Components to code splitting and custom hooks. Learn proven strategies for
+  cleaner, more maintainable, and high-performing code.
+pubDate: 2025-09-03T20:30:00.000Z
+tags:
+  - performance optimization
+  - react patterns
+  - web development
+  - react
+title: Take Your React Code to the Next Level with These Advanced Patterns
+---
+
+# Introduction
+
+Once your React app grows beyond the basics, using core patterns is no longer enough. To build scalable, maintainable, and high-performance UIs, you need to incorporate advanced architectural patterns. Here’s how you can elevate your React code quality and developer experience.
+
+## 1. Compound Components for Flexible UIs
+
+Instead of passing props deeply, use a parent component to manage state and expose shared logic via Context or props. Child components can render dynamically, improving flexibility and reducing prop drilling.
+
+Example use cases: Tabs, Accordions, or Dropdowns.
+
+Caution: Can lead to complex JSX and potentially unintended markup flexibility.
+
+```javascript
+import React, { createContext, useContext, useState, ReactNode } from "react";
+
+// Create Context for Tabs
+const TabsContext = createContext < any > (null);
+
+export function Tabs({ children, defaultValue }: { children: ReactNode; defaultValue: string }) {
+  const [activeTab, setActiveTab] = useState(defaultValue);
+
+  return (
+    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
+      <div className="w-full">{children}</div>
+    </TabsContext.Provider>
+  );
+}
+
+// TabList Component
+export function TabList({ children }: { children: ReactNode }) {
+  return <div className="flex border-b">{children}</div>;
+}
+
+// Individual Tab Button
+export function Tab({ value, children }: { value: string; children: ReactNode }) {
+  const { activeTab, setActiveTab } = useContext(TabsContext);
+  const isActive = activeTab === value;
+
+  return (
+    <button
+      onClick={() => setActiveTab(value)}
+      className={`px-4 py-2 -mb-px border-b-2 ${isActive ? "border-blue-500 text-blue-600 font-semibold"
+          : "border-transparent text-gray-500"
+        }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+// TabPanel Component
+export function TabPanel({ value, children }: { value: string; children: ReactNode }) {
+  const { activeTab } = useContext(TabsContext);
+  if (activeTab !== value) return null;
+
+  return <div className="p-4">{children}</div>;
+}
+```
+
+How to Use It
+
+```javascript
+export default function App() {
+  return (
+    <Tabs defaultValue="profile">
+      <TabList>
+        <Tab value="profile">Profile</Tab>
+        <Tab value="settings">Settings</Tab>
+        <Tab value="about">About</Tab>
+      </TabList>
+
+      <TabPanel value="profile">This is the Profile tab content.</TabPanel>
+      <TabPanel value="settings">Here are your Settings.</TabPanel>
+      <TabPanel value="about">About this application.</TabPanel>
+    </Tabs>
+  );
+}
+```
+
+## 2. Controlled Props & Custom Hooks for Reusability
+
+Extract logic into custom hooks (e.g., useFormInput) to keep components focused and reusable. Controlled component patterns let parent components manage state, allowing for better external control over behavior.
+
+Use when: You want clear separation between state logic and UI, or to reuse form handling logic across components.
+
+## 3. The State Reducer Pattern for Full-State Control
+
+Combine custom hooks with a state reducer to expose internal state and actions to parent components, allowing nuanced overrides of internal behavior.
+
+Great for: UI libraries or highly customizable components.
+
+Trade-offs: Increased complexity and deeper understanding required.
+
+```javascript
+import React, { useReducer } from "react";
+
+// Reducer-driven toggle
+function toggleReducer(state: boolean, action: { type: string }) {
+  switch (action.type) {
+    case "toggle": return !state;
+    case "forceOn": return true;
+    case "forceOff": return false;
+    default: return state;
+  }
+}
+
+function Toggle({ reducer = toggleReducer }: { reducer?: any }) {
+  const [on, dispatch] = useReducer(reducer, false);
+
+  return (
+    <div>
+      <button
+        onClick={() => dispatch({ type: "toggle" })}
+        className={`px-4 py-2 rounded ${on ? "bg-green-500" : "bg-gray-300"}`}
+      >
+        {on ? "ON" : "OFF"}
+      </button>
+    </div>
+  );
+}
+
+// Usage
+export default function App() {
+  return (
+    <Toggle reducer={(state: boolean, action: any) => {
+      if (action.type === "toggle" && state === true) return state; // block turning off
+      return toggleReducer(state, action);
+    }} />
+  );
+}
+```
+
+## 4. Higher-Order Components (HOCs) and Render Props for Logic Sharing
+
+HOCs wrap a component to enhance behavior—ideal for concerns like data fetching, authentication, or logging.
+
+Render Props let you pass render logic as a function, promoting dynamic and customizable rendering.
+
+Use these for abstraction and code reuse—but don’t overuse, as excessive abstraction can obscure component logic.
+
+```javascript
+function withAuth(Component) {
+  return function WrappedComponent(props) {
+    const isLoggedIn = useAuth();
+
+    if (!isLoggedIn) {
+      return <LoginScreen />;
+    }
+    return <Component {...props} />;
+  };
+}
+```
+
+## 5. Performance Optimization: Memo, Lazy Loading, Context Splitting
+
+Reduce unnecessary re-renders and load time with these tools:
+
+* React.memo & useMemo: Avoid rerendering or recalculating heavy components and data.
+* React.lazy & Suspense: Load components only when needed—improving initial load speed.
+
+```javascript
+import React, { memo, useMemo, useState, Suspense, lazy } from "react";
+
+const HeavyComponent = lazy(() => import("./HeavyComponent"));
+
+// Expensive calculation
+function ExpensiveList({ items }: { items: number[] }) {
+  const sorted = useMemo(() => {
+    console.log("Sorting…");
+    return [...items].sort((a, b) => a - b);
+  }, [items]);
+
+  return <ul>{sorted.map(i => <li key={i}>{i}</li>)}</ul>;
+}
+
+const MemoizedList = memo(ExpensiveList);
+
+export default function App() {
+  const [nums] = useState([5, 3, 9, 1]);
+  const [show, setShow] = useState(false);
+
+  return (
+    <div className="p-4">
+      <MemoizedList items={nums} />
+      <button onClick={() => setShow(s => !s)}>Toggle Heavy Component</button>
+      {show && (
+        <Suspense fallback={<p>Loading...</p>}>
+          <HeavyComponent />
+        </Suspense>
+      )}
+    </div>
+  );
+}
+```
+
+## 6. Error Boundaries and Structure Best Practices
+
+* Error Boundaries: Prevent a whole app crash by isolating failing components using React error boundaries.
+* Maintain immutability, avoid anti-patterns like direct DOM manipulation and excessive prop drilling.
+
+## 7. Render Props Pattern (a classic one)
+
+* Error Boundaries: Prevent a whole app crash by isolating failing components using React error boundaries.
+* Maintain immutability, avoid anti-patterns like direct DOM manipulation and excessive prop drilling.
+
+```javascript
+function MouseTracker({ render }) {
+  const [position, setPosition] = React.useState({ x: 0, y: 0 });
+
+  return (
+    <div
+      onMouseMove={(e) =>
+        setPosition({ x: e.clientX, y: e.clientY })
+      }
+      style={{ height: '100px', border: '1px solid black' }}
+    >
+      {render(position)}
+    </div>
+  );
+}
+// Usage
+<MouseTracker
+  render={({ x, y }) => <h4>Mouse is at {x}, {y}</h4>}
+/>
+```
+
+## Conclusion
+
+Elevating your React skills isn’t just about learning new syntax—it’s about structuring your app for clarity, flexibility, and performance. Use Compound Components and custom hooks for composability, HOCs or Render Props for logic reuse, and smart performance tools like memoization and code splitting. You’ll build faster, cleaner, and more scalable React apps.

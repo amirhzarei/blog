@@ -1,0 +1,93 @@
+---
+heroImage: /src/assets/images/nextjs.webp
+category: Next Js
+description: >-
+  Discover ten pitfalls many Next.js beginners fall into—and learn how to
+  sidestep them. From misusing rendering methods to neglecting routing,
+  optimization, and error handling, this guide equips you to write cleaner,
+  faster, and more maintainable Next.js code.
+pubDate: 2025-09-03T20:30:00.000Z
+tags:
+  - react
+  - next js
+  - web development
+title: 10 Common Next.js Mistakes Beginners Make and How to Avoid Them
+---
+
+# Introduction
+
+Next.js is a powerful React framework—but that power comes with a learning curve. As someone who’ve stumbled through many of these mistakes, I’m laying them out here so you can avoid hours of debugging and frustration.
+
+## Mistake 1: Mixing SSR, SSG, ISR, and CSR
+
+The problem: Treating every page the same way—often using getServerSideProps even when unnecessary.
+
+The fix:
+
+* Use SSG (getStaticProps) for static content (blogs, documentation).
+* SSR (getServerSideProps) only when fresh data is crucial.
+* ISR (Incremental Static Regeneration) when you want mostly static pages that still update.
+
+## Mistake 2: Ignoring File-Based Routing
+
+The problem: Trying to use React Router instead of harnessing Next.js’s built-in routing.
+
+The fix: Simply use the pages/ directory (or app/) to define routes via files—Next.js handles the rest with nested folders for structure.
+
+## Mistake 3: Not Using next/image Properly
+
+The problem: Falling back on classic \<img> tags.
+
+The fix: Embrace the Image component from next/image—it automatically handles resizing, lazy loading, and format conversion (like to WebP). Don’t forget to configure next.config.js for external image domains.
+
+## Mistake 4: Forgetting Head for SEO
+
+The problem: Overlooking basic SEO essentials.
+
+The fix: Use \<Head> from next/head to define page titles, meta descriptions, and Open Graph tags—crucial for search engines and social media previews.
+
+## Mistake 5: Misusing API Routes
+
+The problem: Building a full backend in Next.js API routes.
+
+The fix: Reserve API routes for simple use cases—like forms or webhooks. For full backend logic, rely on external services such as Node.js, Firebase, or Supabase.
+
+## Mistake 6: Mishandling Static Assets
+
+The problem: Importing images or assets like in a standard React app.
+
+The fix: Place assets in the /public folder and reference them directly (e.g., \<img src="/logo.png" />). No import needed.
+
+## Mistake 7: Poor Redirects & Middleware Usage
+
+The problem: Handling redirects client-side or ignoring the built-in mechanisms.
+
+The fix: Use next.config.js for server-side redirects or employ middleware for conditional logic like auth or geolocation flows.
+
+## Mistake 8: Skipping Build Optimizations
+
+The problem: Bloated deployment builds and slow performance.
+
+The fix:
+
+* Remove unused dependencies.
+* Enable image and font optimizations.
+* Use dynamic imports (next/dynamic) for large components.
+
+## Mistake 9: Skipping Error Handling
+
+The problem: Assuming everything will work as expected—no fallbacks for failed requests or missing data.
+
+The fix:
+
+* Use try/catch around async fetches.
+
+## Mistake 10: Falling Behind on Updates
+
+The problem: Using outdated patterns or ignoring new Next.js features.
+
+The fix: Stay current. Follow Next.js release notes, subscribe to newsletters, watch Vercel videos—and start using features like the App directory or server components as they become stable.
+
+## Closing Thoughts
+
+These ten mistakes are common—and often frustrating—but they’re all fixable once you’re aware of them. Learn the conventions, leverage optimizations, and invest a little extra into error handling and architecture—and your Next.js apps will be cleaner, faster, and easier to scale.

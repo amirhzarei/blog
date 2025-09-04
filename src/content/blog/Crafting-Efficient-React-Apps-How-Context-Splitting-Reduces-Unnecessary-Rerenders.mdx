@@ -1,0 +1,143 @@
+---
+heroImage: /src/assets/images/contextapi.jpeg
+category: React
+description: >-
+  This post explores a simple yet powerful pattern—Context Splitting—that can
+  dramatically reduce unnecessary rerenders in React apps by separating state
+  values from update functions. Learn how this strategy streamlines performance,
+  how to implement it, and when it’s worth the extra complexity.
+pubDate: 2025-09-03T20:30:00.000Z
+tags:
+  - context splitting
+  - performance optimization
+  - react context api
+title: Context Splitting - Prevent Unnecessary Rerenders and Better Performance
+---
+
+# Introduction
+
+One of the most common headaches for React developers is dealing with excessive rerenders, especially when using the Context API. Even components that only need to update state can end up rerendering when context values change—which is wasteful. The solution? Context Splitting—a pattern that keeps your components lean and efficient.
+
+## Why Traditional Context Leads to Over-Rerenders
+
+If you put both your state and its updater into one Context, like this:
+
+```javascript
+// Traditional Context approach
+const ThemeContext = React.createContext({
+  theme: 'light',
+  setTheme: () => { }
+});
+
+function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState('light');
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+function ThemeDisplay() {
+  const { theme } = useContext(ThemeContext);
+  console.log("ThemeDisplay rendering");
+  return <div>Current theme: {theme}</div>;
+}
+
+function ThemeToggle() {
+  const { setTheme } = useContext(ThemeContext);
+  console.log("ThemeToggle rendering");
+
+  return (
+    <button onClick={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}>
+      Toggle Theme
+    </button>
+  );
+}
+```
+
+Then any component consuming this context—even if it only uses setTheme—will rerender whenever the theme changes. That bloats rendering, especially in large apps. 
+
+## What Is Context Splitting?
+
+Context Splitting solves the problem by separating what changes from what updates:
+
+1. State-only context: Provides just the value (theme).
+2. Updater-only context: Provides just the function (setTheme).
+
+```javascript
+// Split Context approach
+const ThemeContext = React.createContext('light');
+const ThemeSetterContext = React.createContext(() => { });
+
+function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState('light');
+
+  return (
+    <ThemeContext.Provider value={theme}>
+      <ThemeSetterContext.Provider value={setTheme}>
+        {children}
+      </ThemeSetterContext.Provider>
+    </ThemeContext.Provider>
+  );
+}
+
+function ThemeDisplay() {
+  const theme = useContext(ThemeContext);
+  console.log("ThemeDisplay rendering");
+  return <div>Current theme: {theme}</div>;
+}
+
+function ThemeToggle() {
+  const setTheme = useContext(ThemeSetterContext);
+  console.log("ThemeToggle rendering");
+
+  return (
+    <button onClick={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}>
+      Toggle Theme
+    </button>
+  );
+}
+```
+
+That way, components that only need to toggle the theme don’t rerender when the theme itself changes.
+
+### When It Makes Sense to Use This Pattern
+
+Consider Context Splitting when:
+
+* You have components that only dispatch updates.
+* You’re working with performance-sensitive components.
+* Your app has deeply nested component trees where efficiency is a priority.  
+
+### Trade-Offs to Keep in Mind
+
+* Boilerplate grows: You have to manage two separate contexts.
+* Provider nesting increases: More wrapping components in your tree.
+* Mental overhead: You need to deliberately choose which context each component uses.
+
+### Implementation Example with Custom Hooks
+
+Here’s how to create cleaner, consumer-friendly hooks around the split contexts:
+
+```javascript
+function useTheme() {
+  return useContext(ThemeContext);
+}
+
+function useSetTheme() {
+  return useContext(ThemeSetterContext);
+}
+
+// Usage
+function MyComponent() {
+  const theme = useTheme();
+  const setTheme = useSetTheme();
+  // ...
+}
+```
+
+### Conclusion
+
+Context Splitting is a smart, straightforward pattern that helps you avoid unnecessary rerenders by logically separating context values and their setters. While it adds some complexity, the clarity and performance benefits—especially at scale—can be well worth it. Combine it with memoization and profiling tools, and you’ve got a solid toolkit for optimizing your React app.

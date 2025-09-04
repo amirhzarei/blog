@@ -1,0 +1,119 @@
+---
+heroImage: /src/assets/images/java-script-design-patterns.png
+category: JavaScript
+description: >-
+  Discover key JavaScript design patterns—like Singleton, Factory, and
+  Observer—that simplify frontend code, enhance maintainability, and help you
+  build scalable, efficient applications.
+pubDate: 2025-09-03T20:30:00.000Z
+tags:
+  - maintainable code
+  - design patterns
+  - java script
+title: Essential JavaScript Design Patterns Every Frontend Developer Should Master
+---
+
+# Introduction
+
+As frontend projects grow in complexity, basic coding techniques often fall short. This is where JavaScript design patterns come in: they’re tried-and-true methods to handle common problems, improving maintainability and structure across your codebase. Let’s explore some foundational patterns every frontend developer should know.
+
+## Singleton Pattern
+
+What It Does: Ensures there’s only one instance of a class—perfect for managing global state or shared services like app configurations or logging. 
+
+JS Example:
+
+```javascript
+class Logger {
+  static instance;
+  constructor() {
+    if (Logger.instance) return Logger.instance;
+    Logger.instance = this;
+    this.logs = [];
+  }
+  log(msg) { this.logs.push(msg); }
+}
+```
+
+Use this pattern when you need a centralized point of control with predictable behavior.
+
+## Factory Pattern
+
+What It Does: Creates objects based on input parameters without exposing direct instantiation logic—ideal for conditional object creation. 
+
+JS Example:
+
+```javascript
+function VehicleFactory(type) {
+  if (type === 'car') return { wheels: 4, drive: () => { } };
+  if (type === 'bike') return { wheels: 2, ride: () => { } };
+}
+```
+
+This pattern keeps your code flexible and easier to extend.
+
+## Observer Pattern
+
+What It Does: Enables one-to-many messaging—when a central object changes, all subscribed observers react accordingly. Great for state updates or real-time UI changes. 
+
+JS Example:
+
+```javascript
+class Subject {
+  constructor() { this.observers = []; }
+  subscribe(fn) { this.observers.push(fn); }
+  notify(data) { this.observers.forEach(fn => fn(data)); }
+}
+```
+
+## Module Pattern
+
+What It Does: The Module pattern provides a way to encapsulate private variables and functions within a module, exposing only a public interface. This pattern is useful when you need to manage complex logic or dependencies.
+
+JS Example:
+
+```javascript
+const myModule = (() => {
+  const privateVariable = 'Hello, world!';
+
+  function privateFunction() {
+    console.log(privateVariable);
+  }
+
+  return {
+    publicMethod: () => {
+      privateFunction();
+    }
+  };
+})();
+
+myModule.publicMethod(); // Hello, world!
+```
+
+## Decorator Pattern
+
+The Decorator pattern allows you to add additional behavior to an object without modifying its underlying structure. This pattern is useful when you need to extend the functionality of an object without affecting its core implementation.
+
+JS Example:
+
+```javascript
+function LoggerDecorator(func) {
+  return function (...args) {
+    console.log(`Calling ${func.name} with args: ${args}`);
+    return func(...args);
+  };
+}
+
+function add(a, b) {
+  return a + b;
+}
+
+const decoratedAdd = LoggerDecorator(add);
+console.log(decoratedAdd(2, 3));
+// Calling add with args: 2,3
+// 5
+```
+
+## Final Thoughts
+
+JavaScript design patterns offer clarity and control in frontend development. These patterns empower you to build cleaner and more resilient applications.
