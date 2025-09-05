@@ -1,0 +1,173 @@
+---
+heroImage: /src/assets/images/react-hooks.webp
+category: React
+description: >-
+  Tired of 300-line components and tangled effects? Here’s a practical way to
+  structure React hooks so your logic stays focused, testable, and easy to
+  reuse.
+pubDate: 2025-09-04T20:30:00.000Z
+tags:
+  - architecture
+  - hooks
+  - react
+title: 'Structure React Hooks the Right Way: Small, Focused, Reusable '
+---
+
+# The Hook Spiral Is Real
+
+It starts with one useEffect, then a useState, then another useEffect to fix the first one—until your component becomes a spaghetti bowl. Hooks are powerful, but power without structure leads to brittle code. The fix isn’t “more abstractions”—it’s better boundaries.
+
+## Principle 1 — One Responsibility per Hook
+
+A hook should do one thing and do it clearly. If a single effect fetches data, tracks analytics, and wires window events, you’ve coupled unrelated concerns.
+
+Don’t:
+
+```javascript
+useEffect(() => {
+  fetchUser();
+  trackPageVisit();
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+```
+
+Do (split by concern):
+
+```javascript
+useUser();             // data
+usePageTracking();     // analytics
+useWindowResize(onResize); // environment
+```
+
+This keeps each concern testable and replaceable.
+
+## Principle 2 — Name Hooks Like Verbs
+
+Hooks are functions. Name them for what they do, not what they are.
+
+* ✅ useFormValidation, useScrollPosition, useOnlineStatus
+* ❌ useStuff, useLogic, useData
+
+If the name doesn’t communicate behavior at a glance, rename it.
+
+## Principle 3 — Keep Components for Views, Move Logic to  /hooks
+
+Your component is a view; your hooks are where logic lives. Push reusable behavior into a dedicated file.
+
+/hooks/useOnlineStatus.ts
+
+```javascript
+import { useEffect, useState } from "react";
+
+export function useOnlineStatus() {
+  const [isOnline, setIsOnline] = useState < boolean > (navigator.onLine);
+
+  useEffect(() => {
+    const update = () => setIsOnline(navigator.onLine);
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+
+  return isOnline;
+}
+```
+
+Usage
+
+```javascript
+const isOnline = useOnlineStatus();
+```
+
+Cleaner component. Reusable logic.
+
+## Principle 4 — Abstract for Reuse, Not for Aesthetics
+
+Don’t create a custom hook to avoid three lines of useEffect. Reach for a hook when it’s used at least twice, is isolated, and is testable.
+
+Inline stays inline (single-use, trivial):
+
+```javascript
+useEffect(() => {
+  const id = setInterval(tick, 1000);
+  return () => clearInterval(id);
+}, []);
+```
+
+Reusable → extract:
+
+```javascript
+export function useInterval(callback: () => void, delay: number | null) {
+  const saved = useRef(callback);
+  useEffect(() => { saved.current = callback; }, [callback]);
+  useEffect(() => {
+    if (delay == null) return;
+    const id = setInterval(() => saved.current(), delay);
+    return () => clearInterval(id);
+  }, [delay]);
+}
+```
+
+## Principle 5 — Compose Small Hooks Instead of Nesting Everything
+
+Prefer composition over mega-hooks. Build tiny, focused hooks and combine them.
+
+```javascript
+function useUserProfile(userId: string) {
+  const user = useQueryUser(userId);         // fetching concern
+  const isOnline = useOnlineStatus();        // environment concern
+  const canEdit = usePermissions(user.role); // domain concern
+  return { user, isOnline, canEdit };
+}
+```
+
+Each piece is independent and easy to test.
+
+## Principle 6 — A Simple, Robust Data Hook Pattern
+
+A predictable async pattern avoids “loading/error/data” soup scattered across components.
+
+```javascript
+type AsyncState<T> =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "error"; error: Error }
+  | { status: "success"; data: T };
+
+export function useAsync<T>(fn: () => Promise<T>, deps: unknown[] = []) {
+  const [state, setState] = useState < AsyncState < T >> ({ status: "idle" });
+
+  useEffect(() => {
+    let active = true;
+    setState({ status: "loading" });
+    fn()
+      .then((data) => active && setState({ status: "success", data }))
+      .catch((error) => active && setState({ status: "error", error }));
+    return () => { active = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+
+  return state;
+}
+```
+
+Usage
+
+```javascript
+const state = useAsync(() => fetch("/api/user").then(r => r.json()), []);
+if (state.status === "loading") return <Spinner />;
+if (state.status === "error") return <ErrorBox error={state.error} />;
+return <UserCard user={state.data} />;
+```
+
+## Quick Checklist
+
+* Does each hook have one clear responsibility?
+* Is the name a verb that describes behavior?
+* Could I reuse or test this hook independently?
+* Is the component now mostly markup + composition?
+* Did I avoid premature abstractions?

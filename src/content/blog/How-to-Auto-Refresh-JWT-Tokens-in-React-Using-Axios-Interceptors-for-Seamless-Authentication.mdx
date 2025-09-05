@@ -1,0 +1,108 @@
+---
+heroImage: /src/assets/images/auto-refresh-JWT.png
+category: Development Techniques
+description: >-
+  Learn how to set up automatic JWT token refreshing in React using Axios
+  interceptors, Zustand, and refresh tokens to keep users logged in smoothly
+  without constant re-authentication.
+pubDate: 2025-09-04T20:30:00.000Z
+tags:
+  - authentication
+  - axios
+  - JWT
+  - react
+title: How to Auto-Refresh JWT Tokens in React Using Axios Interceptors
+---
+
+# 🔑 Introduction
+
+Authentication is at the core of modern React apps, and JWT (JSON Web Tokens) has become the go-to solution. The challenge? JWTs usually have a short lifespan for security reasons. Once expired, users are often forced to log in again.
+
+That’s where auto-refresh with Axios interceptors comes in. Instead of logging out users when their token expires, we can silently request a new token and retry the failed request — keeping the experience smooth and secure.
+
+## 🚦 Why Token Auto-Refresh Matters
+
+* Access Tokens: Short-lived, used for each request.
+* Refresh Tokens: Long-lived, used only to request new access tokens.
+
+Without refresh logic:
+
+* With refresh logic:
+* Expired token → interceptor fetches new one → retry request → user stays logged in.
+
+## ⚙️ Step 1: Create an Axios Instance
+
+```javascript
+// src/utils/axios.ts
+import axios from "axios";
+
+export const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_API_URL,
+  withCredentials: true, // required for secure cookies
+  headers: { "Content-Type": "application/json" },
+});
+```
+
+## ⚙️ Step 2: Add a Refresh Function
+
+```javascript
+const refreshToken = async () => {
+  return axios.post(
+    `${import.meta.env.VITE_BACKEND_API_URL}/auth/refresh`,
+    {},
+    { withCredentials: true }
+  );
+};
+```
+
+## ⚙️ Step 3: Configure the Response Interceptor
+
+```javascript
+import { useAuthStore } from "../store";
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._isRetry) {
+      originalRequest._isRetry = true;
+      try {
+        await refreshToken(); // request new access token
+        return axiosInstance(originalRequest); // retry original request
+      } catch (err) {
+        useAuthStore.getState().logout();
+        return Promise.reject(err);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+## 📂 Step 4: State Management with Zustand
+
+Zustand keeps track of authentication state:
+
+* Stores user data and tokens.
+* Clears everything when logout is triggered.
+
+This makes handling token expiration and retries much easier.
+
+## 🎯 Real-World Example
+
+Imagine you’re building an Admin Dashboard:
+
+1. User logs in → gets access token (15 min) + refresh token (7 days).
+2. Token expires while browsing.
+3. Interceptor catches 401 Unauthorized.
+4. Refresh API provides a new token.
+5. 👉 The user never even notices.
+
+## 🏁 Conclusion
+
+By setting up Axios interceptors with refresh tokens, your React apps will handle expired JWTs gracefully. This means:
+
+* A smoother user experience.
+* Better security practices.
+* Cleaner code with centralized authentication logic.

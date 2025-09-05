@@ -1,0 +1,109 @@
+---
+heroImage: /src/assets/images/react-mindset.webp
+category: React
+description: >-
+  Not everything in React needs to be a component. Over-componentization often
+  creates bloated trees, unnecessary re-renders, and messy prop drilling. Learn
+  when to extract components — and when to just keep things simple.
+pubDate: 2025-09-04T20:30:00.000Z
+tags:
+  - performance
+  - architecture
+  - react
+title: 'The React Anti-Component Mindset: Rethinking When and Why to Create Components'
+---
+
+# 📌 Introduction
+
+One of the first lessons React developers hear is: “everything should be a component.” While this sounds like a clean philosophy, taken to the extreme it causes more harm than good. This article challenges that assumption and shows why being selective with componentization can lead to simpler, faster, and more maintainable React apps.
+
+## ⚠️ The Pitfalls of Over-Componentization
+
+When every tiny element is extracted into a separate component, you often face:
+
+* Bloated component trees with unnecessary nesting
+* Prop drilling across multiple layers
+* Unwanted re-renders triggered by irrelevant updates
+* Tightly coupled logic that’s harder to debug
+* Artificial complexity without real benefit
+
+Instead of defaulting to “make it a component”, ask: “Does this really need to be one?”
+
+## 🔎 Rule of Thumb: Purpose Before Extraction
+
+Before you split UI into components, consider:
+
+* Reusability → Is it repeated across the app? Then a component makes sense.
+* Behavior → Does it manage its own state or effects? If yes, isolate it.
+* Clarity → Does creating a new component reduce complexity, or just shuffle code around?
+
+If it’s just for code aesthetics, a function or inline JSX may be enough.
+
+## 🛠️ Functions Can Be Enough
+
+React is still JavaScript. You don’t always need a new component to avoid duplication.
+
+Example:
+
+```javascript
+// Instead of a new <Note /> component
+const renderNote = () => (
+  <p className="note">Note: This action is irreversible.</p>
+);
+
+// Just call it
+{ renderNote() }
+```
+
+This approach avoids unnecessary component boundaries and extra re-renders.
+
+## 📉 Case Study: Dropdown Item Hell
+
+You’ve probably seen this pattern:
+
+```javascript
+<DropdownItem>
+  <DropdownItemIcon />
+  <DropdownItemLabel />
+</DropdownItem>
+```
+
+While it looks modular, it often bloats the codebase. A flat, direct map is cleaner:
+
+```javascript
+{
+  items.map(item => (
+    <div className="dropdown-item" key={item.id}>
+      <Icon src={item.icon} />
+      <span>{item.label}</span>
+    </div>
+  ))
+}
+```
+
+Simple, efficient, and easy to maintain.
+
+## 🚫 When Not to Create a Component
+
+Skip componentization if:
+
+* The JSX appears only once and is simple
+* You’re splitting code only for “organization” (use code folding instead)
+* It requires passing 6+ props just to work (high coupling)
+* It’s either too dumb (no logic, single-use) or too smart (monolithic, un-reusable)
+
+## ✅ Focus on Composition, Not Extraction
+
+Instead of endlessly extracting components:
+
+* Use hooks to encapsulate logic
+* Favor composition (slots, render props, children) for flexibility
+* Keep your trees flat and expressive, not deeply nested
+
+## 🔑 Conclusion
+
+React components are powerful, but not everything belongs in one. By resisting the urge to wrap every piece of JSX into a new component, you’ll end up with:
+
+* Cleaner, flatter code
+* Better performance with fewer unnecessary re-renders
+* A system that scales without over-engineering

@@ -1,0 +1,115 @@
+---
+heroImage: /src/assets/images/react-performance.jpg
+category: Development Techniques
+description: >-
+  Learn how to reduce CPU overhead in React apps by combining Context and lazy
+  destructuring. This approach helps when working with large props or deeply
+  nested state, preventing unnecessary work on every render.
+pubDate: 2025-09-04T20:30:00.000Z
+tags:
+  - optimization
+  - performance
+  - react
+title: 'React Performance: Using Lazy Destructuring with Context to Handle Heavy Props'
+---
+
+# 🚦 The Hidden CPU Cost of Destructuring
+
+When React components receive large props (e.g., big JSON datasets, configuration maps), developers often destructure them immediately at the top of the function.
+
+Example:
+
+```javascript
+function BigComponent({ hugeObject }) {
+  const { field1, field2, field3 } = hugeObject; // runs every render
+  return <div>{field1}</div>;
+}
+```
+
+Even if only field1 is rendered, React still processes all three fields on every render. Multiply this across large lists or complex UIs and you get a silent CPU tax.
+
+## 💡 Why This is a Problem
+
+* Extra CPU work on every render
+* Garbage collection from unused destructured variables
+* Noticeable performance hit in component-heavy apps
+
+## The Solution: Context + Lazy Destructuring
+
+Instead of unpacking props right away:
+
+1. Pass the entire object through React Context.
+2. Only access the fields when you actually need them.
+
+Step 1: Wrap Data in Context
+
+```javascript
+import React, { createContext, useContext } from "react";
+
+const BigDataContext = createContext(null);
+
+export function BigDataProvider({ value, children }) {
+  return <BigDataContext.Provider value={value}>{children}</BigDataContext.Provider>;
+}
+
+export function useBigData() {
+  return useContext(BigDataContext);
+}
+```
+
+Step 2: Lazy Destructure When Needed
+
+```javascript
+function Consumer() {
+  const bigData = useBigData();
+  return <div>{bigData.field1}</div>; // Only touches field1
+}
+```
+
+Step 3: Access Inside Callbacks
+
+```javascript
+function SaveButton() {
+  const bigData = useBigData();
+
+  const handleClick = () => {
+    const { payload } = bigData; // Only when clicked
+    sendToServer(payload);
+  };
+
+  return <button onClick={handleClick}>Save</button>;
+}
+```
+
+## Bonus: Memoize Before Providing
+
+If the object comes from a parent prop:
+
+```javascript
+function App({ hugeObject }) {
+  const memoData = React.useMemo(() => hugeObject, [hugeObject]);
+
+  return (
+    <BigDataProvider value={memoData}>
+      <Dashboard />
+    </BigDataProvider>
+  );
+}
+```
+
+## When to Use This Pattern
+
+✅ Best for:
+
+* Huge props/state objects
+* Shared datasets (configs, catalogs, pre-fetched data)
+* Conditional rendering
+
+⚠️ Avoid if:
+
+* Props are small (over-optimizing adds complexity)
+* Destructuring happens inside tight loops
+
+## Conclusion
+
+Lazy destructuring with Context is a low-effort optimization that can pay big dividends in apps handling massive props. Instead of unpacking everything up front, defer the work until it’s truly required—your CPU (and your users) will thank you.
