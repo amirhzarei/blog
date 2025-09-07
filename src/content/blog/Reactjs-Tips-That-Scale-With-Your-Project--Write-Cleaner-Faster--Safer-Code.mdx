@@ -1,0 +1,167 @@
+---
+heroImage: /src/assets/images/react-scalable-code.png
+category: React
+description: >-
+  It’s easy to build React apps when they’re small — but scaling them without
+  drowning in bugs and spaghetti code is the real challenge. Here are 10
+  practical tips to keep your React projects clean, fast, and safe as they grow.
+pubDate: 2025-09-06T20:30:00.000Z
+tags:
+  - clean code
+  - web development
+  - react js
+title: >-
+  React.js Tips That Scale With Your Project — Write Cleaner, Faster & Safer
+  Code
+---
+
+When your React app is tiny, you can get away with messy hacks.
+
+But once you hit dozens of components, hundreds of states, and multiple APIs, bad patterns multiply into technical debt.
+
+Here are 10 React tips that scale gracefully with your project.
+
+## 📦 1. Centralize Your API Calls
+
+Don’t scatter fetch or axios calls in every component.
+
+✅ Instead, create a dedicated /api folder:
+
+```javascript
+// /api/user.js
+export const getUserProfile = () => axios.get('/api/user');
+```
+
+Now you can import cleanly anywhere:
+
+```javascript
+import { getUserProfile } from "../api/user";
+```
+
+📌 Keeps your logic consistent and easier to maintain.
+
+## 🧠 2. Use Error Boundaries for Better UX
+
+One bad component shouldn’t crash your whole app.
+
+```javascript
+class ErrorBoundary extends React.Component {
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  render() {
+    return this.state.hasError ? <h2>Something went wrong.</h2> : this.props.children;
+  }
+}
+```
+
+✅ Wrap pages or components with \<ErrorBoundary />.
+
+## 🧼 3. One Component = One Responsibility
+
+If your component fetches data, shows loaders, and renders UI all at once… it’s too much.
+
+
+❌ Bad: bloated, untestable components
+
+✅ Better:
+
+* PageContainer → fetching
+* Loader → UI state
+* Card/ListItem → display
+
+## 🧩 4. Create a useFetch Hook
+
+Instead of repeating useEffect + loading + error in every component:
+
+```javascript
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(url)
+      .then((res) => res.json())
+      .then(setData)
+      .finally(() => setLoading(false));
+  }, [url]);
+
+  return { data, loading };
+}
+```
+
+✅ Cleaner, reusable data fetching across pages.
+
+## 📁 5. Use Index Files for Imports
+
+Tired of long relative paths?
+
+```javascript
+// components/index.js
+export { default as Button } from "./Button";
+export { default as Header } from "./Header";
+```
+
+Now:
+
+```javascript
+import { Button, Header } from "../components";
+```
+
+## ⚡ 6. Use React.memo() & useMemo() Wisely
+
+Performance boosters when used correctly.
+
+```javascript
+const ExpensiveComponent = React.memo(({ data }) => { … });
+const processedData = useMemo(() => heavyFunction(data), [data]);
+```
+
+✅ Prevents unnecessary re-renders, especially in lists.
+
+## 🎨 7. Abstract Repeated UI into Atomic Components
+
+If you reuse a button or input across your app → make it a compon
+
+```javascript
+<Button variant="primary" onClick={handleClick}>Save</Button>
+```
+
+✅ Consistency in style + behavior.
+
+## 🛡️ 8. Set Up ESLint + Prettier
+
+Your future self (and your team) will thank you.
+
+* Auto-format on save
+* Catch unused vars & bad patterns
+* Enforce coding standards
+
+## 🔥 9. Add Loading Skeletons
+
+Instead of a boring spinner:
+
+```javascript
+npm install react - loading - skeleton
+```
+
+```javascript
+{ loading ? <Skeleton height={30} /> : <h1>{title}</h1> }
+```
+
+✅ Improves perceived performance.
+
+## 🧪 10. Write Unit Tests for Utilities
+
+Start with pure functions — easiest to test, biggest ROI.
+
+```javascript
+// utils/calcTotal.js
+export const calcTotal = (items) => items.reduce((sum, i) => sum + i.price, 0);
+
+// calcTotal.test.js
+test("sums prices correctly", () => {
+  expect(calcTotal([{ price: 10 }, { price: 20 }])).toBe(30);
+});
+```

@@ -1,0 +1,133 @@
+---
+heroImage: /src/assets/images/next-js-image-mistake.webp
+category: Next Js
+description: >-
+  Many developers misuse Next.js <Image> and unknowingly hurt their site’s
+  performance. Here are 5 common mistakes and how to fix them for faster,
+  SEO-friendly apps.
+pubDate: 2025-09-06T20:30:00.000Z
+tags:
+  - web performance
+  - image optimization
+  - next js
+title: 5 Common Mistakes Developers Make with Next.js Image Optimization
+---
+
+# 🚀 Why Image Optimization Matters in Next.js
+
+Images are often the largest assets on a web page. If they’re not optimized properly, they can:
+
+* Drag down Lighthouse scores
+* Worsen Core Web Vitals (LCP, CLS, FID)
+* Hurt SEO rankings
+* Cause higher bounce rates
+
+The built-in \<Image> component in Next.js 15 is powerful, but only if you use it correctly. Let’s break down the top 5 mistakes developers make and how to avoid them.
+
+## ❌ 1. Using \<img> Instead of \<Image>
+
+The issue: Using raw HTML \<img> tags bypasses Next.js optimizations like lazy loading, resizing, and WebP conversion.
+
+Fix: Always use the next/image component.
+
+```javascript
+import Image from "next/image";
+
+<Image
+  src="/images/hero.jpg"
+  alt="Hero"
+  width={1200}
+  height={800}
+/>
+```
+
+✅ Benefits: automatic responsive sizing, lazy loading, and format optimization.
+
+## ❌ 2. Skipping Width & Height
+
+The issue: Not specifying dimensions causes layout shifts, hurting CLS scores.
+
+Fix: Provide explicit width and height or use fill inside a styled parent container.
+
+```javascript
+<Image
+  src="/images/blog-thumbnail.png"
+  alt="Blog Thumbnail"
+  width={400}
+  height={300}
+/>
+```
+
+🧠 Pro tip: Wrap with a relative container and use fill when dimensions are fluid.
+
+## ❌ 3. Forgetting Placeholders
+
+The issue: White flashes or blank spaces while loading images.
+
+Fix: Add a blur-up placeholder with placeholder="blur".
+
+```javascript
+<Image
+  src="/images/banner.jpg"
+  alt="Banner"
+  width={1200}
+  height={600}
+  placeholder="blur"
+  blurDataURL="/images/banner-blur.jpg"
+/>
+```
+
+✨ Smooth loading, improved perceived performance.
+
+## ❌ 4. Misconfigured next.config.js
+
+The issue: External images break or don’t optimize properly.
+
+Fix: Add allowed domains and formats:
+
+```javascript
+// next.config.js
+module.exports = {
+  images: {
+    domains: ["cdn.example.com"],
+    formats: ["image/webp"],
+  },
+};
+```
+
+⚠️ Without domains, Next.js will block external images.
+
+## ❌ 5. Not Testing with Lighthouse
+
+The issue: Assuming optimizations work without measuring.
+
+Fix: Run Lighthouse in Chrome DevTools and compare before/after.
+
+📊 Example:
+
+* LCP improved from 4.2s → 2.1s
+* CLS dropped from 0.23 → 0.03
+* Performance score: 61 → 91
+
+## 💥 Bonus: Responsive Images
+
+Don’t forget to serve different sizes for mobile and desktop.
+
+```javascript
+<Image
+  src="/images/mobile-friendly.jpg"
+  alt="Responsive Example"
+  width={1200}
+  height={800}
+  sizes="(max-width: 768px) 100vw, 50vw"
+  style={{ width: "100%", height: "auto" }}
+/>
+```
+
+🎯 Result: mobile users load lighter images, saving bandwidth and improving speed.
+
+## 🧠 Final Thoughts
+
+Next.js image optimization is more than just swapping \<img> for \<Image>. It’s about proper usage: set dimensions, use placeholders, configure domains, and always test with Lighthouse.
+
+A quick audit today can dramatically improve performance, SEO, and user experience.
