@@ -1,0 +1,148 @@
+---
+heroImage: /src/assets/images/css-if-function.png
+category: CSS
+description: >-
+  The new CSS if() function unlocks conditional styling directly in CSS — no
+  JavaScript, no preprocessors, no hacky workarounds. Learn how to use it for
+  style queries, media queries, feature detection, and real-world UI scenarios.
+pubDate: 2025-09-08T20:30:00.000Z
+tags:
+  - modern css
+  - web development
+  - css
+title: 'The CSS if() Function Is Here: Write Conditional Styles Without JavaScript'
+---
+
+# 🚀 Introduction: CSS Gets Smarter
+
+For years, frontend developers relied on JavaScript toggles, SCSS mixins, and endless media queries to handle conditional styling. Now, with Chrome 137, the CSS if() function has officially landed — bringing true conditional logic to CSS itself.
+
+It’s elegant, declarative, and eliminates the need for bloated workarounds.
+
+## ⚡ How the CSS if() Function Works
+
+The syntax is straightforward:
+
+```css
+property: if (
+  condition - 1: value - 1;
+condition - 2: value - 2;
+  else: fallback
+);
+```
+
+* Conditions are checked in order
+* The first matching value is applied
+* If no condition matches, the else value is used
+
+Think of it like if/else in programming languages — but natively in CSS.
+
+## 🎯 3 Key Use Cases of if()
+
+#### 1. Style Queries (Dynamic based on CSS variables)
+
+```css
+.card {
+  --status: attr(data - status type(<custom-ident>));
+
+    border-color: if(
+    style(--status: pending): royalblue;
+    style(--status: complete): seagreen;
+    style(--status: error): crimson;
+    else: gray
+    );
+}
+```
+
+✅ A single data-status attribute controls all visual states.
+
+#### 2. Media Queries, Simplified
+
+```css
+h1 {
+  font - size: if (
+    media(width >= 1200px): 3rem;
+  media(width >= 768px): 2.5rem;
+    else: 2rem
+  );
+}
+```
+
+✅ Inline responsive logic → no nested @media chaos.
+
+#### 3. Feature Detection
+
+```css
+.element {
+  border - color: if (
+    supports(color: lch(0 0 0)): lch(50 % 100 150);
+  supports(color: lab(0 0 0)): lab(50 100 - 50);
+    else: rgb(200, 100, 50)
+  );
+}
+```
+
+✅ Graceful fallbacks without JS polyfills.
+
+## 💡 Real-World Examples
+
+* Dark Mode in 3 lines:
+
+```css
+body {
+  --theme: "dark";
+
+  background: if (style(--theme: "dark"): #1a1a1a; else: white);
+  color: if (style(--theme: "dark"): #e4e4e4; else: #333);
+}
+```
+
+* Alerts with semantic states:
+
+```css
+.alert {
+  --type: attr(data - type type(<custom-ident>));
+    background: if(
+    style(--type: success): #d4edda;
+    style(--type: danger): #f8d7da;
+    else: #f8f9fa
+    );
+}
+```
+
+* Responsive container widths:
+
+```css
+.container {
+  width: if (
+    media(width >= 1400px): 1320px;
+  media(width >= 1200px): 1140px;
+    else: 100 %
+  );
+}
+```
+
+## 🔮 Combining with Modern CSS
+
+The if() function pairs beautifully with new CSS features like light-dark() and custom functions:
+
+```css
+.element {
+  color: if (
+    style(--high - contrast: true): black;
+  else: light - dark(#333, #e4e4e4)
+  );
+}
+```
+
+## 🌍 Browser Support (August 2025)
+
+* ✅ Chrome/Edge: 137+
+* ✅ Chrome Android: 139+
+* ❌ Firefox: In development
+* ❌ Safari: On roadmap
+* ❌ Opera: Not supported yet
+
+## 🏁 Final Thoughts
+
+The CSS if() function is a game-changer. It reduces reliance on JS, cleans up messy media queries, and brings conditional styling natively into CSS.

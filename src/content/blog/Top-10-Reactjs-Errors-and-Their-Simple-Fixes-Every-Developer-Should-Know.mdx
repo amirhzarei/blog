@@ -1,0 +1,155 @@
+---
+heroImage: /src/assets/images/react-error-handleing.png
+category: React
+description: >-
+  A practical guide to the top 10 most common React.js errors — explained with
+  simple solutions, real-world debugging tips, and examples every developer can
+  use.
+pubDate: 2025-09-08T20:30:00.000Z
+tags:
+  - react errors
+  - debugging
+  - react
+title: Top 10 React.js Errors and Their Simple Fixes Every Developer Should Know
+---
+
+# 👋 Introduction
+
+Hey there! I’m a frontend developer who has spent countless hours fixing small but frustrating React bugs 😅. If you’ve worked with React, chances are you’ve run into some of these errors too.
+
+Instead of textbook explanations, here are real-world React errors I personally faced, along with simple fixes that can save you hours of debugging. Let’s dive in! 💻👇
+
+## 🚨 1. “React is not defined” Error
+
+Error Message:
+
+```javascript
+'React' must be in scope when using JSX react / react -in -jsx - scope
+```
+
+Why It Happens: JSX requires React in scope in older versions (pre-React 17).
+
+✅ Solution:
+
+```javascript
+import React from "react";
+```
+
+Note: From React 17+, importing React is optional, but linting tools may still require it.
+
+## 🧱 2. “Cannot read property ‘map’ of undefined”
+
+Error Message:
+
+```javascript
+TypeError: Cannot read properties of undefined(reading 'map')
+```
+
+Why It Happens: Trying to map over data before it’s loaded.
+
+✅ Solution:
+
+```javascript
+{ myArray?.map(item => <div>{item.name}</div>) }
+```
+
+💡 Always initialize arrays with useState(\[]) to avoid this.
+
+## 💣 3. “Each child in a list should have a unique ‘key’ prop”
+
+Why It Happens: Rendering lists without a unique key prop.
+
+✅ Solution:
+
+```javascript
+{
+  users.map(user => (
+    <UserCard key={user.id} data={user} />
+  ))
+}
+```
+
+❗ Avoid using index as a key unless necessary.
+
+## 🧠 4. “Hooks can only be called inside of a function component”
+
+Why It Happens: Using hooks incorrectly (outside components, inside loops, or conditions).
+
+✅ Solution:
+
+```javascript
+function MyComponent() {
+  const [count, setCount] = useState(0);
+}
+```
+
+Always follow the Rules of Hooks.
+
+## 📦 5. “Module not found: Can’t resolve”
+
+Why It Happens: Typos in file paths or missing extensions.
+
+✅ Solution:
+
+* Double-check paths and extensions.
+* Use absolute imports with jsconfig.json or tsconfig.json.
+
+## 🔁 6. Component keeps re-rendering infinitely
+
+Why It Happens: State updates inside useEffect dependencies.
+
+✅ Solution:
+
+```javascript
+useEffect(() => {
+  // logic without causing state loop
+}, []);
+```
+
+## 🔐 7. “Cannot destructure property … of ‘undefined’”
+
+Why It Happens: Destructuring props or objects before they exist.
+
+✅ Solution:
+
+```javascript
+function Profile({ user = {} }) {
+  const { name } = user;
+}
+```
+
+## ⚠️ 8. “Too many re-renders”
+
+Why It Happens: Updating state directly in the component body.
+
+❌ Bad:
+
+```javascript
+setCount(count + 1);
+```
+
+✅ Good (use useEffect):
+
+```javascript
+useEffect(() => setCount(c => c + 1), []);
+```
+
+## 🧪 9. “Cannot update a component while rendering a different component”
+
+Why It Happens: Updating parent state during child render.
+
+✅ Solution: Use callbacks triggered from events, not during render.
+
+## 🧰 10. “Uncontrolled input becoming controlled”
+
+Why It Happens: Mixing value with defaultValue.
+
+✅ Solution:
+
+```javascript
+<input value={name || ""} onChange={e => setName(e.target.value)} />
+```
+
+## 💬 Final Thoughts
+
+Debugging React can feel overwhelming, but once you’ve seen these common errors and fixes, you’ll start spotting them instantly. Bookmark this guide — it might save your sanity one day. 🚀

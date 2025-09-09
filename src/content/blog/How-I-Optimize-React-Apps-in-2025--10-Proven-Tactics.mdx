@@ -1,0 +1,162 @@
+---
+heroImage: /src/assets/images/optimize-react.png
+category: React
+description: >-
+  React 19 and edge-first frameworks like Next.js demand fast, responsive apps.
+  In this guide, I break down 10 practical tactics — from code-splitting and
+  memoization to virtualization, state management, and React 2025 features — to
+  help you optimize React apps with confidence.
+pubDate: 2025-09-08T20:30:00.000Z
+tags:
+  - web optimization
+  - performance
+  - react
+title: How I Optimize React Apps in 2025 — 10 Proven Tactics
+---
+
+# 🚀 Introduction: Why Performance Still Matters
+
+It’s 2025, and with React 19 on the horizon and frameworks like Next.js dominating the edge-first era, performance is no longer optional — it’s expected.
+
+Users want blazing-fast apps, while teams need maintainable and testable codebases.
+
+Here are 10 battle-tested techniques I use to keep my React projects snappy and scalable.
+
+## 1. Code Splitting & Lazy Loading
+
+Load only what’s needed:
+
+```javascript
+const SettingsPage = React.lazy(() => import('./SettingsPage'));
+
+<Suspense fallback={<Spinner />}>
+  <SettingsPage />
+</Suspense>
+```
+
+✅ Reduces initial load time
+
+✅ Improves Time to Interactive (TTI)\
+
+
+## 2. Memoization & Pure Components
+
+Prevent unnecessary re-renders:
+
+```javascript
+const Card = React.memo(({ title }) => <div>{title}</div>);
+const filtered = useMemo(() => data.filter(...), [data]);
+```
+
+✅ Stabilizes components
+
+✅ Cuts redundant calculations
+
+## 3. Virtualization for Large Lists
+
+Render only what’s visible:
+
+```javascript
+import { FixedSizeList as List } from 'react-window';
+
+<List height={400} itemCount={1000} itemSize={35} width={300}>
+  {RowComponent}
+</List>
+```
+
+✅ Handles thousands of items efficiently
+
+✅ Reduces DOM bloat
+
+## 4. Image & Asset Optimization
+
+* Use loading="lazy"
+* Serve .webp or modern formats
+* Optimize with srcSet
+* Deliver via CDN (Vercel, Cloudflare, etc.)
+
+```javascript
+<img src="/img/avatar.webp" loading="lazy" />
+```
+
+✅ Saves bandwidth
+
+✅ Improves Core Web Vitals
+
+## 5. Efficient State Management
+
+Global state should be minimal. Prefer local state. If global is needed:
+
+* Use Zustand or Jotai (minimal re-renders)
+* Use use-context-selector instead of raw Context API
+
+✅ Cleaner architecture
+
+✅ Better scalability
+
+## 6. Avoid Anonymous Inline Callbacks
+
+❌ Bad:
+
+```javascript
+<button onClick={() => doSomething(id)}>Click</button>
+```
+
+✅ Good:
+
+```javascript
+const handleClick = useCallback(() => doSomething(id), [id]);
+<button onClick={handleClick}>Click</button>
+```
+
+## 7. Measure Before You Optimize
+
+Use the right tools:
+
+* React DevTools Profiler
+* Chrome Lighthouse
+* bundlephobia.com
+* next build && next analyze
+
+📌 Rule: Don’t optimize blindly. Profile first.
+
+## 8. Use Web Workers for Heavy Computation
+
+Offload expensive tasks:
+
+```javascript
+const worker = new Worker(new URL('./worker.js', import.meta.url));
+worker.postMessage(data);
+```
+
+✅ Keeps UI responsive
+
+✅ Handles large calculations safely
+
+## 9. Production Builds & Tree-Shaking
+
+Always run in production mode:
+
+```javascript
+npm run build
+```
+
+Frameworks like Next.js and Vite handle:
+
+* Tree-shaking
+* Minification
+* Dead code elimination
+
+✅ Smaller bundles
+
+✅ Faster deploys
+
+## 🏁 Final Thoughts
+
+Performance in React isn’t just about speed — it’s about resilience, scalability, and UX.
+
+🔑 Key mindset:
+
+* Profile → Optimize → Measure again
+* Keep things simple and clean
+* Don’t over-engineer — ship with confidence
